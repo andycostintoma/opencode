@@ -1,4 +1,5 @@
 import { Schema } from "effect"
+import type { Cost } from "./cost.js"
 import { ModelID, ProviderID } from "./ids.js"
 import {
   mergeRequestOptions,
@@ -79,6 +80,8 @@ export class Model<
   readonly limit?: Limit
   readonly modalities?: Modalities
   readonly compatibility?: Compatibility
+  /** Listed prices, as models.dev v2 `cost`. `calculateCost(model.cost, usage)` turns usage into USD. */
+  readonly cost?: Cost
   /** @internal The API deployed at `baseURL` with `auth`; what the clients run. */
   readonly route: Model.Api<Type, C>
 
@@ -95,6 +98,7 @@ export class Model<
     this.limit = input.limit
     this.modalities = input.modalities
     this.compatibility = input.compatibility
+    this.cost = input.cost
     this.route = route
   }
 
@@ -111,6 +115,7 @@ export class Model<
       limit: input.limit,
       modalities: input.modalities,
       compatibility: input.compatibility,
+      cost: input.cost,
     }
     if (input.type !== "chat") return new Model<Type, Options, C>(fields, input.api)
     const api = input.api as AnyRoute<C>
@@ -187,6 +192,7 @@ export namespace Model {
     readonly limit?: Limit
     readonly modalities?: Modalities
     readonly compatibility?: Compatibility
+    readonly cost?: Cost
   }
 
   export interface Input<Type extends ModelType, C extends Compact = Compact>
