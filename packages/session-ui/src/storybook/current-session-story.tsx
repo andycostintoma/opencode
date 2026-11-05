@@ -1,6 +1,6 @@
 import type { SessionDocument } from "../document"
 import { File } from "../components/file"
-import { DataProvider } from "../context/data"
+import { DataProvider, type TurnDiffSource } from "../context/data"
 import type { SessionUserActions } from "../message/current-message"
 import type { SessionUserPresentation } from "../timeline/session-timeline"
 import { SessionTimeline } from "../timeline/session-timeline"
@@ -12,6 +12,7 @@ import { CURRENT_SESSION_ID, STORY_TIME } from "./current-session-fixtures"
 export function CurrentSessionProviders(props: {
   document: SessionDocument
   backgroundCompaction?: boolean
+  turnDiff?: TurnDiffSource
   children: JSX.Element
 }) {
   return (
@@ -67,7 +68,7 @@ export function CurrentSessionProviders(props: {
         },
         session_diff: { [CURRENT_SESSION_ID]: props.document.diffs },
       }}
-      turnDiff={{ get: () => props.document.diffs, load: () => {} }}
+      turnDiff={props.turnDiff ?? { state: () => ({ status: "ready", diffs: props.document.diffs }), load: () => {} }}
     >
       <FileComponentProvider component={File}>{props.children}</FileComponentProvider>
     </DataProvider>
@@ -83,6 +84,7 @@ export function CurrentSessionTimelineStory(props: {
   shellToolDefaultOpen?: boolean
   editToolDefaultOpen?: boolean
   turnDiffs?: boolean
+  turnDiff?: TurnDiffSource
   backgroundCompaction?: boolean
 }) {
   // Inline story documents rebuild their messages on every prop read, and the timeline projection keys text by identity.
@@ -122,7 +124,11 @@ export function CurrentSessionTimelineStory(props: {
         <Show when={revision()} keyed>
           {(revision) => (
             <div data-story-revision={revision}>
-              <CurrentSessionProviders document={document()} backgroundCompaction={props.backgroundCompaction}>
+              <CurrentSessionProviders
+                document={document()}
+                backgroundCompaction={props.backgroundCompaction}
+                turnDiff={props.turnDiff}
+              >
                 <SessionTimeline
                   document={document()}
                   presentation={props.presentation}
