@@ -126,7 +126,9 @@ describe("transitionSessionCommands", () => {
         { type: "dialog.loaded", attempt: 1 },
       ])
 
-      expect(first?.effects).toEqual([{ type: "dialog.load", attempt: 1, kind, timeoutMs: SESSION_DIALOG_LOAD_TIMEOUT_MS }])
+      expect(first?.effects).toEqual([
+        { type: "dialog.load", attempt: 1, kind, timeoutMs: SESSION_DIALOG_LOAD_TIMEOUT_MS },
+      ])
       expect(repeat?.state).toBe(first!.state)
       expect(repeat?.effects).toEqual([])
       expect(loaded?.effects).toEqual([{ type: "dialog.cancel" }, { type: "dialog.show", kind }])
@@ -143,7 +145,10 @@ describe("transitionSessionCommands", () => {
       { type: "dialog.requested", kind: "palette", sessionKey: "A" },
     ])
 
-    expect(failed?.effects).toEqual([{ type: "dialog.cancel" }, { type: "toast.request-failed", cause: "ChunkLoadError" }])
+    expect(failed?.effects).toEqual([
+      { type: "dialog.cancel" },
+      { type: "toast.request-failed", cause: "ChunkLoadError" },
+    ])
     expect(failed?.state).toMatchObject({ dialog: { status: "closed" } })
     expect(retried?.effects).toEqual([
       { type: "dialog.load", attempt: 2, kind: "palette", timeoutMs: SESSION_DIALOG_LOAD_TIMEOUT_MS },
